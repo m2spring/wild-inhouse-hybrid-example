@@ -2,22 +2,10 @@
 
 # In reality this file is *NOT* being published outside of 'myhouse'!
 
-PRJ="$(cd `dirname $0` && pwd)"
+TARGET=install
+#TARGET=deploy
 
-mkdir -p $PRJ/parent/target
+# Anything in-house specific is "injected" as a property (here repo.mgr.root)
 
-( cat <<EOF
-  <parent>
-    <groupId>com.myhouse</groupId>
-    <artifactId>root</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <relativePath>../../inhouse-root</relativePath>
-  </parent>
-EOF
-) \
-| sed -e '/<!--parent-->/r /dev/stdin' $PRJ/parent/pom.xml \
-| sed -e '/<!--parent-->/d' > $PRJ/parent/target/pom.xml
-
-# Unclear how to get rid of the tag line in one sed call.
-
-mvn clean install
+mvn clean $TARGET \
+    -Drepo.mgr.root=http://nexus.myhouse.com:8081/nexus/content/repositories
